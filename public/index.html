@@ -1,0 +1,1589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>VoxLink - Self-Hosted Voice, Video & Community</title>
+  <link rel="stylesheet" href="style.css?v=3.7">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <meta name="theme-color" content="#5865F2">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=gg+sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Authentication Modal (Login & Register) -->
+  <div id="auth-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-icon">
+        <svg viewBox="0 0 24 24" width="40" height="40" fill="currentColor">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+        </svg>
+      </div>
+      <h2 id="auth-title">Welcome Back!</h2>
+      <p id="auth-subtitle">We're so excited to see you again!</p>
+
+      <button type="button" class="btn-pwa-install" id="btn-pwa-install" style="display: none; margin-bottom: 14px; width: 100%;" onclick="installPwaApp()">
+        📲 Install VoxLink App (Android / Mobile)
+      </button>
+
+      <!-- Quick Sign-in Actions -->
+      <div class="auth-quick-actions">
+        <button type="button" class="btn-google-login" id="btn-google-login">
+          <svg viewBox="0 0 24 24" width="18" height="18">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+          </svg>
+          Continue with Google
+        </button>
+      </div>
+
+      <div class="auth-divider">
+        <span>OR SIGN IN WITH USERNAME</span>
+      </div>
+
+      <div class="auth-tabs">
+        <button type="button" class="auth-tab active" id="tab-login-btn">Log In</button>
+        <button type="button" class="auth-tab" id="tab-register-btn">Register</button>
+      </div>
+
+      <div id="auth-error-banner" class="auth-error-banner" style="display: none;"></div>
+
+      <form id="login-form">
+        <label class="form-label">USERNAME</label>
+        <input type="text" id="login-username" required autocomplete="username" maxlength="24">
+
+        <label class="form-label">PASSWORD</label>
+        <input type="password" id="login-password" required autocomplete="current-password">
+
+        <button type="submit" class="btn-primary" style="width: 100%; margin-top: 10px;">Log In</button>
+      </form>
+
+      <form id="register-form" style="display: none;">
+        <label class="form-label">USERNAME</label>
+        <input type="text" id="reg-username" required autocomplete="username" maxlength="24" placeholder="Pick a unique handle">
+
+        <label class="form-label">PASSWORD</label>
+        <input type="password" id="reg-password" required autocomplete="new-password" placeholder="At least 4 characters">
+
+        <label class="form-label">CUSTOM STATUS (OPTIONAL)</label>
+        <input type="text" id="reg-status" placeholder="Gaming, chilling, building..." maxlength="35">
+
+        <button type="submit" class="btn-primary" style="width: 100%; margin-top: 10px;">Create Account</button>
+      </form>
+
+      <div class="auth-server-endpoint-bar" id="auth-server-endpoint-bar" style="margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: space-between; font-size: 11.5px; color: var(--text-muted);">
+        <span id="auth-server-status-label">Server: <strong id="auth-server-host-val" style="color: var(--text-header);">http://localhost:3000</strong></span>
+        <button type="button" class="btn-text-action" id="btn-change-server-url" style="background: none; border: none; color: var(--accent-blurple); cursor: pointer; font-size: 11.5px; font-weight: 600;">⚙️ Change</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Server Connection Switcher Modal -->
+  <div id="server-switcher-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-card" style="width: 440px;">
+      <div class="modal-header-row">
+        <h3>Connect to Server</h3>
+        <button type="button" class="close-modal-btn" onclick="closeModal('server-switcher-modal')">✕</button>
+      </div>
+      <p style="text-align: left; font-size: 13px; color: var(--text-muted); margin-bottom: 14px;">
+        Enter the address of your VoxLink host server (local Wi-Fi IP or public online URL):
+      </p>
+
+      <form id="server-switcher-form">
+        <label class="form-label">SERVER ADDRESS (HTTP OR HTTPS)</label>
+        <input type="text" id="server-switcher-input" placeholder="https://voxlink.servehttp.com" required>
+
+        <div style="margin: 12px 0 16px; display: flex; flex-direction: column; gap: 6px;">
+          <span style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Quick Fill:</span>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button type="button" class="btn-secondary" style="font-size: 12px; padding: 6px 10px;" id="preset-btn-domain">🌐 Domain (https://voxlink.servehttp.com)</button>
+            <button type="button" class="btn-secondary" style="font-size: 12px; padding: 6px 10px;" id="preset-btn-wifi">📶 Wi-Fi (192.168.0.66:3000)</button>
+            <button type="button" class="btn-secondary" style="font-size: 12px; padding: 6px 10px;" id="preset-btn-local">🏠 Localhost (3000)</button>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" onclick="closeModal('server-switcher-modal')">Cancel</button>
+          <button type="submit" class="btn-primary">Connect</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Google Sign-In Dialog Modal -->
+  <div id="google-auth-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-card" style="width: 420px;">
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 14px;">
+        <svg viewBox="0 0 24 24" width="28" height="28">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+        </svg>
+        <h3 style="color: var(--text-header); font-size: 18px; margin: 0;">Sign in with Google</h3>
+      </div>
+      <p style="text-align: left; font-size: 13px; margin-bottom: 16px; color: var(--text-muted);">
+        Choose an account to continue to VoxLink:
+      </p>
+
+      <div class="google-accounts-picker">
+        <div class="google-acc-card" id="google-quick-alex">
+          <div class="google-acc-avatar" style="background-image: url('https://lh3.googleusercontent.com/a/default-user=s96-c');"></div>
+          <div class="google-acc-details">
+            <div class="google-acc-name">Alex Developer</div>
+            <div class="google-acc-email">alex.dev@gmail.com</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="auth-divider" style="margin: 16px 0 14px;">
+        <span>OR USE CUSTOM GOOGLE EMAIL</span>
+      </div>
+
+      <form id="google-custom-form">
+        <label class="form-label">YOUR NAME</label>
+        <input type="text" id="google-custom-name" placeholder="Alex" required maxlength="20">
+
+        <label class="form-label">GOOGLE EMAIL</label>
+        <input type="email" id="google-custom-email" placeholder="alex@gmail.com" required>
+
+        <div class="modal-actions" style="justify-content: space-between; margin-top: 14px;">
+          <button type="button" class="btn-cancel" onclick="closeModal('google-auth-modal')">Cancel</button>
+          <button type="submit" class="btn-primary">Sign in with Google</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Create or Join Server Modal -->
+  <div id="create-server-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-header-row">
+        <h3 id="server-modal-title">Add a Server</h3>
+        <button type="button" class="close-modal-btn" onclick="closeModal('create-server-modal')">✕</button>
+      </div>
+
+      <div class="auth-tabs" style="margin-bottom: 16px;">
+        <button type="button" class="auth-tab active" id="tab-btn-create-server">Create a Server</button>
+        <button type="button" class="auth-tab" id="tab-btn-join-server">Join with Code</button>
+      </div>
+
+      <!-- Create Form -->
+      <form id="create-server-form">
+        <label class="form-label">SERVER NAME</label>
+        <input type="text" id="new-server-name" placeholder="Alex's Hangout" required maxlength="32">
+
+        <label class="form-label">SERVER ICON ACRONYM / EMOJI</label>
+        <input type="text" id="new-server-icon" placeholder="AH or 🎮" maxlength="4">
+
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" onclick="closeModal('create-server-modal')">Cancel</button>
+          <button type="submit" class="btn-primary">Create Server</button>
+        </div>
+      </form>
+
+      <!-- Join Form -->
+      <form id="join-server-form" style="display: none;">
+        <label class="form-label">INVITE CODE OR SERVER ID</label>
+        <input type="text" id="join-server-code-input" placeholder="e.g. VOXLINK or VOX-7K9P" required maxlength="24">
+        <p class="form-sub-hint" style="margin-top: 6px;">Enter an invite code sent to you by a friend or server admin.</p>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" onclick="closeModal('create-server-modal')">Cancel</button>
+          <button type="submit" class="btn-primary">Join Server</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Server Invite Friends Modal -->
+  <div id="server-invite-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-header-row">
+        <h3>Invite Friends</h3>
+        <button type="button" class="close-modal-btn" onclick="closeModal('server-invite-modal')">✕</button>
+      </div>
+
+      <div class="invite-server-preview">
+        <div class="invite-server-avatar" id="invite-server-avatar">VL</div>
+        <div>
+          <div class="invite-server-title-row">
+            <span class="invite-server-name" id="invite-server-name">VoxLink Official</span>
+            <span class="server-official-badge" id="invite-server-official-badge" style="display: none;">✓ Official</span>
+          </div>
+          <div class="invite-server-members" id="invite-server-members-count">1 Member</div>
+        </div>
+      </div>
+
+      <label class="form-label" style="margin-top: 16px;">SHARE SERVER INVITE CODE</label>
+      <div class="invite-code-box">
+        <input type="text" id="invite-code-display" readonly>
+        <button type="button" class="btn-primary" id="btn-copy-invite-code">Copy</button>
+      </div>
+
+      <div class="channel-perm-divider"></div>
+
+      <label class="form-label">INVITE DIRECTLY IN DIRECT MESSAGES</label>
+      <div id="invite-dm-friends-list" class="invite-friends-list custom-scroll"></div>
+
+      <div class="modal-actions" style="margin-top: 16px;">
+        <button type="button" class="btn-cancel" onclick="closeModal('server-invite-modal')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Friend / Start Direct Message Modal -->
+  <div id="add-friend-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-header-row">
+        <h3>Add Friend & Direct Message</h3>
+        <button type="button" class="close-modal-btn" onclick="closeModal('add-friend-modal')">✕</button>
+      </div>
+      <p style="color: var(--text-muted); font-size: 13px; margin: 4px 0 16px;">You can add a friend using their VoxLink username.</p>
+      
+      <form id="form-send-friend-request">
+        <label class="form-label">FRIEND USERNAME</label>
+        <div style="display: flex; gap: 8px;">
+          <input type="text" id="add-friend-username-input" placeholder="e.g. Alex" required maxlength="30" style="flex: 1;">
+          <button type="submit" class="btn-primary" style="white-space: nowrap;">Send Friend Request</button>
+        </div>
+      </form>
+
+      <div class="channel-perm-divider" style="margin: 20px 0 16px;"></div>
+
+      <label class="form-label">ALL KNOWN USERS (CLICK TO DM)</label>
+      <div id="known-users-dm-list" class="custom-scroll" style="max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px;"></div>
+
+      <div class="modal-actions" style="margin-top: 16px;">
+        <button type="button" class="btn-cancel" onclick="closeModal('add-friend-modal')">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Incoming DM Call Modal Overlay -->
+  <div id="incoming-dm-call-modal" class="modal-overlay" style="display: none; z-index: 10000;">
+    <div class="modal-card" style="text-align: center; max-width: 360px; padding: 24px;">
+      <div id="incoming-call-avatar" class="user-avatar" style="width: 72px; height: 72px; font-size: 28px; margin: 0 auto 16px; border: 3px solid var(--brand-color); animation: pulse 1.5s infinite;">?</div>
+      <h3 id="incoming-call-username" style="margin-bottom: 4px; font-size: 18px;">Friend</h3>
+      <p id="incoming-call-type" style="color: var(--text-muted); font-size: 13px; margin-bottom: 24px;">Incoming voice call...</p>
+
+      <div style="display: flex; gap: 16px; justify-content: center;">
+        <button type="button" id="btn-decline-dm-call" class="btn-primary" style="background: var(--status-red); flex: 1; padding: 12px; font-weight: bold; border-radius: 8px;">
+          ✕ Decline
+        </button>
+        <button type="button" id="btn-accept-dm-call" class="btn-primary" style="background: var(--status-green); flex: 1; padding: 12px; font-weight: bold; border-radius: 8px;">
+          📞 Accept
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Incoming Friend Request Prompt Modal -->
+  <div id="incoming-friend-request-modal" class="modal-overlay" style="display: none; z-index: 9999;">
+    <div class="modal-card" style="text-align: center; max-width: 360px; padding: 24px;">
+      <div id="incoming-friend-avatar" class="user-avatar" style="width: 64px; height: 64px; font-size: 24px; margin: 0 auto 12px; background: var(--brand-color);">?</div>
+      <h3 id="incoming-friend-username" style="margin-bottom: 4px; font-size: 18px;">@User</h3>
+      <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">sent you a friend request!</p>
+
+      <div style="display: flex; gap: 12px; justify-content: center;">
+        <button type="button" id="btn-decline-friend-prompt" class="btn-primary" style="background: var(--bg-hover); flex: 1; padding: 10px; font-weight: bold; border-radius: 8px;">
+          Decline
+        </button>
+        <button type="button" id="btn-accept-friend-prompt" class="btn-primary" style="background: var(--status-green); flex: 1; padding: 10px; font-weight: bold; border-radius: 8px;">
+          Accept Friend
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Group DM Modal -->
+  <div id="create-dm-group-modal" class="modal-overlay" style="display: none; z-index: 9990;">
+    <div class="modal-card" style="max-width: 440px;">
+      <div class="modal-header-row">
+        <h3>Create Group DM</h3>
+        <button type="button" class="close-modal-btn" onclick="closeModal('create-dm-group-modal')">✕</button>
+      </div>
+      <p style="color: var(--text-muted); font-size: 13px; margin: 4px 0 16px;">You can add up to 9 friends to create a private group chat and call.</p>
+
+      <label class="form-label">GROUP NAME (OPTIONAL)</label>
+      <input type="text" id="create-group-name-input" placeholder="e.g. Squad Hangout" maxlength="40">
+
+      <label class="form-label" style="margin-top: 14px;">SELECT FRIENDS & USERS</label>
+      <input type="text" id="create-group-search-input" placeholder="Search users by username..." class="dms-search-input" style="margin-bottom: 8px;" autocomplete="off">
+      <div id="create-group-friends-checklist" class="custom-scroll" style="max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;"></div>
+
+      <div class="modal-actions" style="margin-top: 20px;">
+        <button type="button" class="btn-cancel" onclick="closeModal('create-dm-group-modal')">Cancel</button>
+        <button type="button" id="btn-submit-create-group" class="btn-primary">Create Group</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Group DM Settings Modal -->
+  <div id="dm-group-settings-modal" class="modal-overlay" style="display: none; z-index: 9990;">
+    <div class="modal-card" style="max-width: 480px;">
+      <div class="modal-header-row">
+        <h3>Group Settings</h3>
+        <button type="button" class="close-modal-btn" onclick="document.getElementById('dm-group-settings-modal').style.display='none'; closeModal('dm-group-settings-modal');">✕</button>
+      </div>
+      <p style="color: var(--text-muted); font-size: 13px; margin: 4px 0 16px;">Customize your group name, profile picture, or manage members.</p>
+
+      <div style="margin-bottom: 14px;">
+        <label class="form-label">GROUP BANNER (Supports PNG, JPG, GIF)</label>
+        <div id="group-banner-preview" style="width: 100%; height: 72px; border-radius: 8px; background: linear-gradient(135deg, var(--brand-blurple), #23a55a); background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1px dashed rgba(255,255,255,0.2); position: relative; overflow: hidden;" title="Click to upload banner" onclick="document.getElementById('group-banner-file-input').click()">
+          <span id="group-banner-preview-text" style="font-size: 11.5px; font-weight: 600; color: #fff; background: rgba(0,0,0,0.55); padding: 4px 10px; border-radius: 4px; pointer-events: none;">Upload Banner</span>
+        </div>
+        <input type="file" id="group-banner-file-input" accept="image/*" style="display: none;">
+      </div>
+
+      <div style="display: flex; gap: 16px; align-items: center; margin-bottom: 16px;">
+        <div id="group-avatar-preview" style="width: 64px; height: 64px; border-radius: 50%; background: var(--brand-blurple); display: flex; align-items: center; justify-content: center; font-size: 24px; color: #fff; cursor: pointer; background-size: cover; background-position: center; flex-shrink: 0;" title="Click to upload icon" onclick="document.getElementById('group-avatar-file-input').click()">
+          👥
+        </div>
+        <div style="flex: 1;">
+          <label class="form-label">GROUP ICON (Supports PNG, JPG, GIF)</label>
+          <input type="file" id="group-avatar-file-input" accept="image/*" style="display: none;">
+          <button type="button" class="btn-secondary" style="padding: 6px 12px; font-size: 12.5px;" onclick="document.getElementById('group-avatar-file-input').click()">
+            Upload Image / GIF
+          </button>
+        </div>
+      </div>
+
+      <label class="form-label">GROUP NAME</label>
+      <input type="text" id="edit-group-name-input" placeholder="Group Name" maxlength="40">
+
+      <label class="form-label" style="margin-top: 14px;">GROUP DESCRIPTION / TOPIC</label>
+      <textarea id="edit-group-desc-input" placeholder="Tell members what this group is about..." maxlength="300" style="width: 100%; height: 60px; resize: none; background: var(--bg-tertiary); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; padding: 8px 10px; color: var(--text-normal); font-size: 13.5px; font-family: inherit; box-sizing: border-box;"></textarea>
+
+      <label class="form-label" style="margin-top: 14px;">GROUP MEMBERS</label>
+      <div id="group-settings-members-list" class="custom-scroll" style="max-height: 180px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px;"></div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 14px;">
+        <div>
+          <button type="button" id="btn-leave-group" class="btn-cancel" style="color: #ed4245; border-color: rgba(237,66,69,0.3);">Leave Group</button>
+          <button type="button" id="btn-delete-group" class="btn-danger" style="margin-left: 6px; display: none;">Delete Group</button>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button type="button" class="btn-cancel" onclick="document.getElementById('dm-group-settings-modal').style.display='none'; closeModal('dm-group-settings-modal');">Cancel</button>
+          <button type="button" id="btn-save-group-settings" class="btn-primary">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Category Modal -->
+  <div id="create-category-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-header-row">
+        <h3>Create Category</h3>
+        <button type="button" class="close-modal-btn" onclick="closeModal('create-category-modal')">✕</button>
+      </div>
+      <form id="create-category-form">
+        <label class="form-label">CATEGORY NAME</label>
+        <input type="text" id="new-category-name" placeholder="GAMING ZONES" required maxlength="30">
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" onclick="closeModal('create-category-modal')">Cancel</button>
+          <button type="submit" class="btn-primary">Create Category</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit / Delete Category Modal -->
+  <div id="edit-category-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-header-row">
+        <h3>Category Settings</h3>
+        <button type="button" class="close-modal-btn" onclick="closeModal('edit-category-modal')">✕</button>
+      </div>
+      <form id="edit-category-form">
+        <input type="hidden" id="edit-category-id">
+        <label class="form-label">CATEGORY NAME</label>
+        <input type="text" id="edit-category-name" required maxlength="30">
+
+        <div class="modal-actions" style="justify-content: space-between; margin-top: 20px;">
+          <button type="button" class="btn-danger" id="delete-category-btn">Delete Category</button>
+          <div>
+            <button type="button" class="btn-cancel" onclick="closeModal('edit-category-modal')">Cancel</button>
+            <button type="submit" class="btn-primary">Save Changes</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Create Channel Modal -->
+  <div id="create-channel-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-card wide-channel-modal">
+      <div class="modal-header-row">
+        <h3>Create Channel</h3>
+        <button type="button" class="close-modal-btn" onclick="closeModal('create-channel-modal')">✕</button>
+      </div>
+      <form id="create-channel-form">
+        <input type="hidden" id="channel-target-category-id">
+        <label class="form-label">CHANNEL TYPE</label>
+        <div class="channel-type-selector">
+          <label class="type-option active">
+            <input type="radio" name="channelType" value="text" checked>
+            <div>
+              <div class="type-title"># Text</div>
+              <div class="type-desc">Post messages, images, code, and voice notes</div>
+            </div>
+          </label>
+          <label class="type-option">
+            <input type="radio" name="channelType" value="voice">
+            <div>
+              <div class="type-title">🔊 Voice & Video</div>
+              <div class="type-desc">Hang out with voice, video cams, and screen sharing</div>
+            </div>
+          </label>
+        </div>
+
+        <label class="form-label" style="margin-top: 14px;">CHANNEL NAME</label>
+        <input type="text" id="new-channel-name" placeholder="new-channel" required maxlength="30">
+
+        <label class="form-label">TOPIC (OPTIONAL)</label>
+        <input type="text" id="new-channel-topic" placeholder="What is this channel about?" maxlength="80">
+
+        <div id="new-channel-voice-limit-wrap" style="display: none; margin-top: 14px;">
+          <div class="voice-limit-header">
+            <label class="form-label" style="margin: 0;">VOICE USER LIMIT</label>
+            <span id="new-channel-voice-limit-val" class="voice-limit-val-text">No Limit</span>
+          </div>
+          <div class="form-sub-hint" style="margin-bottom: 8px;">Limits the number of users that can join this voice channel at the same time.</div>
+          <div class="voice-limit-slider-container">
+            <input type="range" id="new-channel-voice-limit-range" min="0" max="99" value="0" step="1" class="custom-range-slider">
+            <div class="voice-limit-preset-pills">
+              <button type="button" class="preset-pill active" data-target="new" data-val="0">No Limit</button>
+              <button type="button" class="preset-pill" data-target="new" data-val="2">2 (Duo)</button>
+              <button type="button" class="preset-pill" data-target="new" data-val="3">3 (Trio)</button>
+              <button type="button" class="preset-pill" data-target="new" data-val="4">4 (Squad)</button>
+              <button type="button" class="preset-pill" data-target="new" data-val="5">5 (5-Stack)</button>
+              <button type="button" class="preset-pill" data-target="new" data-val="8">8</button>
+              <button type="button" class="preset-pill" data-target="new" data-val="10">10</button>
+              <button type="button" class="preset-pill" data-target="new" data-val="25">25</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="new-channel-slowmode-wrap" style="margin-top: 14px;">
+          <div class="voice-limit-header">
+            <label class="form-label" style="margin: 0;">SLOWMODE (ANTI-SPAM)</label>
+            <span id="new-channel-slowmode-val" class="voice-limit-val-text">Off</span>
+          </div>
+          <div class="form-sub-hint" style="margin-bottom: 8px;">Members will be restricted to sending one message per cooldown interval.</div>
+          <div class="voice-limit-slider-container">
+            <input type="range" id="new-channel-slowmode-range" min="0" max="300" value="0" step="5" class="custom-range-slider">
+            <div class="voice-limit-preset-pills">
+              <button type="button" class="preset-pill active" data-target="new-slow" data-val="0">Off</button>
+              <button type="button" class="preset-pill" data-target="new-slow" data-val="5">5s</button>
+              <button type="button" class="preset-pill" data-target="new-slow" data-val="10">10s</button>
+              <button type="button" class="preset-pill" data-target="new-slow" data-val="15">15s</button>
+              <button type="button" class="preset-pill" data-target="new-slow" data-val="30">30s</button>
+              <button type="button" class="preset-pill" data-target="new-slow" data-val="60">1m</button>
+              <button type="button" class="preset-pill" data-target="new-slow" data-val="120">2m</button>
+              <button type="button" class="preset-pill" data-target="new-slow" data-val="300">5m</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="channel-perm-divider"></div>
+
+        <div class="channel-privacy-toggle-box">
+          <div class="toggle-text-wrap">
+            <div class="toggle-title">🔒 Private Channel</div>
+            <div class="toggle-desc">Only selected roles will be able to view this channel.</div>
+          </div>
+          <label class="switch-toggle">
+            <input type="checkbox" id="new-channel-is-private">
+            <span class="switch-slider"></span>
+          </label>
+        </div>
+
+        <div id="new-channel-roles-wrap" style="display: none; margin-top: 12px;">
+          <label class="form-label">WHO CAN ACCESS THIS CHANNEL?</label>
+          <div id="new-channel-roles-list" class="channel-roles-checkbox-list custom-scroll"></div>
+        </div>
+
+        <div class="channel-perm-divider"></div>
+
+        <div class="channel-perms-table-wrap">
+          <label class="form-label">CHANNEL ROLE PERMISSIONS (READ & WRITE)</label>
+          <div class="form-sub-hint" style="margin-bottom: 8px;">Configure which roles can only read or also send messages in this channel.</div>
+          <div id="new-channel-perms-list" class="channel-perms-matrix custom-scroll"></div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" onclick="closeModal('create-channel-modal')">Cancel</button>
+          <button type="submit" class="btn-primary">Create Channel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit Channel Modal -->
+  <div id="edit-channel-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-card wide-channel-modal">
+      <div class="modal-header-row">
+        <h3>Channel Settings</h3>
+        <button type="button" class="close-modal-btn" onclick="closeModal('edit-channel-modal')">✕</button>
+      </div>
+      <form id="edit-channel-form">
+        <input type="hidden" id="edit-channel-id">
+        <label class="form-label">CHANNEL NAME</label>
+        <input type="text" id="edit-channel-name" required maxlength="30">
+
+        <label class="form-label">CHANNEL TOPIC</label>
+        <input type="text" id="edit-channel-topic" maxlength="80">
+
+        <div id="edit-channel-voice-limit-wrap" style="display: none; margin-top: 14px;">
+          <div class="voice-limit-header">
+            <label class="form-label" style="margin: 0;">VOICE USER LIMIT</label>
+            <span id="edit-channel-voice-limit-val" class="voice-limit-val-text">No Limit</span>
+          </div>
+          <div class="form-sub-hint" style="margin-bottom: 8px;">Limits the number of users that can join this voice channel at the same time.</div>
+          <div class="voice-limit-slider-container">
+            <input type="range" id="edit-channel-voice-limit-range" min="0" max="99" value="0" step="1" class="custom-range-slider">
+            <div class="voice-limit-preset-pills">
+              <button type="button" class="preset-pill active" data-target="edit" data-val="0">No Limit</button>
+              <button type="button" class="preset-pill" data-target="edit" data-val="2">2 (Duo)</button>
+              <button type="button" class="preset-pill" data-target="edit" data-val="3">3 (Trio)</button>
+              <button type="button" class="preset-pill" data-target="edit" data-val="4">4 (Squad)</button>
+              <button type="button" class="preset-pill" data-target="edit" data-val="5">5 (5-Stack)</button>
+              <button type="button" class="preset-pill" data-target="edit" data-val="8">8</button>
+              <button type="button" class="preset-pill" data-target="edit" data-val="10">10</button>
+              <button type="button" class="preset-pill" data-target="edit" data-val="25">25</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="edit-channel-slowmode-wrap" style="margin-top: 14px;">
+          <div class="voice-limit-header">
+            <label class="form-label" style="margin: 0;">SLOWMODE (ANTI-SPAM)</label>
+            <span id="edit-channel-slowmode-val" class="voice-limit-val-text">Off</span>
+          </div>
+          <div class="form-sub-hint" style="margin-bottom: 8px;">Members will be restricted to sending one message per cooldown interval.</div>
+          <div class="voice-limit-slider-container">
+            <input type="range" id="edit-channel-slowmode-range" min="0" max="300" value="0" step="5" class="custom-range-slider">
+            <div class="voice-limit-preset-pills">
+              <button type="button" class="preset-pill active" data-target="edit-slow" data-val="0">Off</button>
+              <button type="button" class="preset-pill" data-target="edit-slow" data-val="5">5s</button>
+              <button type="button" class="preset-pill" data-target="edit-slow" data-val="10">10s</button>
+              <button type="button" class="preset-pill" data-target="edit-slow" data-val="15">15s</button>
+              <button type="button" class="preset-pill" data-target="edit-slow" data-val="30">30s</button>
+              <button type="button" class="preset-pill" data-target="edit-slow" data-val="60">1m</button>
+              <button type="button" class="preset-pill" data-target="edit-slow" data-val="120">2m</button>
+              <button type="button" class="preset-pill" data-target="edit-slow" data-val="300">5m</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="channel-perm-divider"></div>
+
+        <div class="channel-privacy-toggle-box">
+          <div class="toggle-text-wrap">
+            <div class="toggle-title">🔒 Private Channel</div>
+            <div class="toggle-desc">Only selected roles will be able to view this channel.</div>
+          </div>
+          <label class="switch-toggle">
+            <input type="checkbox" id="edit-channel-is-private">
+            <span class="switch-slider"></span>
+          </label>
+        </div>
+
+        <div id="edit-channel-roles-wrap" style="display: none; margin-top: 12px;">
+          <label class="form-label">WHO CAN ACCESS THIS CHANNEL?</label>
+          <div id="edit-channel-roles-list" class="channel-roles-checkbox-list custom-scroll"></div>
+        </div>
+
+        <div class="channel-perm-divider"></div>
+
+        <div class="channel-perms-table-wrap">
+          <label class="form-label">CHANNEL ROLE PERMISSIONS (READ & WRITE)</label>
+          <div class="form-sub-hint" style="margin-bottom: 8px;">Configure which roles can only read or also send messages in this channel.</div>
+          <div id="edit-channel-perms-list" class="channel-perms-matrix custom-scroll"></div>
+        </div>
+
+        <div class="modal-actions" style="justify-content: space-between;">
+          <button type="button" class="btn-danger" id="delete-channel-btn">Delete Channel</button>
+          <div>
+            <button type="button" class="btn-cancel" onclick="closeModal('edit-channel-modal')">Cancel</button>
+            <button type="submit" class="btn-primary">Save Changes</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Server Settings Modal (Overview, Roles, Bans) -->
+  <div id="server-settings-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-card wide-modal">
+      <div class="settings-layout">
+        <div class="settings-sidebar">
+          <div class="settings-server-name" id="settings-srv-title">Server Settings</div>
+          <div class="settings-tab-item active" data-tab="tab-overview">Overview & Media</div>
+          <div class="settings-tab-item" data-tab="tab-roles">Roles & Permissions</div>
+          <div class="settings-tab-item" data-tab="tab-bans">Bans</div>
+        </div>
+
+        <div class="settings-pane">
+          <div class="modal-header-row">
+            <h3 id="settings-tab-heading">Server Overview</h3>
+            <button type="button" class="close-modal-btn" onclick="closeModal('server-settings-modal')">✕</button>
+          </div>
+
+          <!-- Overview & Media Tab -->
+          <div id="tab-overview" class="settings-tab-content custom-scroll">
+            <label class="form-label">SERVER NAME</label>
+            <input type="text" id="settings-overview-name" maxlength="32">
+
+            <div class="overview-media-grid" style="display: flex; gap: 20px; margin: 16px 0;">
+              <!-- Server Icon Uploader -->
+              <div style="flex: 1;">
+                <label class="form-label">SERVER ICON (IMAGE OR ANIMATED GIF)</label>
+                <div class="media-upload-box">
+                  <div class="server-icon-preview" id="server-icon-preview">VL</div>
+                  <label class="btn-secondary" style="cursor: pointer;">
+                    Upload Icon
+                    <input type="file" id="server-icon-file-input" accept="image/*" style="display: none;">
+                  </label>
+                </div>
+              </div>
+
+              <!-- Server Banner Uploader -->
+              <div style="flex: 1.5;">
+                <label class="form-label">SERVER BANNER (IMAGE OR ANIMATED GIF)</label>
+                <div class="banner-upload-box">
+                  <div class="server-banner-preview" id="server-banner-preview">No Banner</div>
+                  <label class="btn-secondary" style="cursor: pointer;">
+                    Upload Banner
+                    <input type="file" id="server-banner-file-input" accept="image/*" style="display: none;">
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <label class="form-label" style="margin-top: 14px;">SERVER INVITE CODE</label>
+            <div class="invite-code-box" style="margin-bottom: 14px;">
+              <input type="text" id="settings-invite-code-input" maxlength="16">
+              <button type="button" class="btn-secondary" id="btn-settings-regen-invite" title="Generate New Code">🎲 New</button>
+            </div>
+
+            <div class="channel-privacy-toggle-box" id="setting-official-badge-box" style="margin-bottom: 14px;">
+              <div class="toggle-text-wrap">
+                <div class="toggle-title">🛡️ Official Verified Badge</div>
+                <div class="toggle-desc">Dev & Creator only: Grant the official verified badge to this server.</div>
+              </div>
+              <label class="switch-toggle">
+                <input type="checkbox" id="settings-is-official-checkbox">
+                <span class="switch-slider"></span>
+              </label>
+            </div>
+
+            <button type="button" class="btn-primary" id="save-server-overview-btn" style="margin-top: 10px;">Save Changes</button>
+
+            <div class="danger-zone-box">
+              <h4>DANGER ZONE</h4>
+              <p>Deleting a server is permanent and cannot be undone.</p>
+              <button type="button" class="btn-danger" id="delete-server-btn">Delete Server</button>
+            </div>
+          </div>
+
+          <!-- Roles Tab -->
+          <div id="tab-roles" class="settings-tab-content" style="display: none;">
+            <div class="roles-manager-container">
+              <div class="roles-sidebar-list">
+                <div class="roles-list-header">
+                  <span>ROLES</span>
+                  <button type="button" class="add-role-mini-btn" id="add-role-btn" title="Create Role">+</button>
+                </div>
+                <div id="roles-items-list" class="custom-scroll"></div>
+              </div>
+
+              <div class="role-editor-pane custom-scroll" id="role-editor-pane">
+                <div id="role-editor-empty" style="color: var(--text-muted); padding: 20px;">Select a role to edit its permissions or create a new one.</div>
+                <form id="role-editor-form" style="display: none;">
+                  <input type="hidden" id="edit-role-id">
+
+                  <label class="form-label">ROLE NAME</label>
+                  <input type="text" id="edit-role-name" required maxlength="30">
+
+                  <div style="display: flex; gap: 16px; margin-bottom: 16px;">
+                    <div style="flex: 1;">
+                      <label class="form-label">ROLE COLOR</label>
+                      <input type="color" id="edit-role-color" style="height: 38px; width: 100%; border-radius: 4px; cursor: pointer; background: var(--bg-tertiary); border: none;">
+                    </div>
+                    <div style="width: 100px;">
+                      <label class="form-label">BADGE EMOJI</label>
+                      <input type="text" id="edit-role-badge" placeholder="👑, 🛡️, ⭐" maxlength="4">
+                    </div>
+                  </div>
+
+                  <label class="form-label">ROLE PERMISSIONS</label>
+                  <div class="permissions-checklist" id="permissions-checklist"></div>
+
+                  <div class="modal-actions" style="justify-content: space-between; margin-top: 24px;">
+                    <button type="button" class="btn-danger" id="delete-role-btn">Delete Role</button>
+                    <button type="submit" class="btn-primary">Save Role</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bans Tab -->
+          <div id="tab-bans" class="settings-tab-content custom-scroll" style="display: none;">
+            <div class="category-title" style="margin-bottom: 12px;">BANNED MEMBERS</div>
+            <div id="bans-list-container" class="bans-list-box"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- User Profile Settings Modal -->
+  <div id="profile-settings-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-card" style="width: 500px; max-height: 90vh; overflow-y: auto;">
+      <div class="modal-header-row">
+        <h3>User Settings</h3>
+        <button type="button" class="close-modal-btn" onclick="closeModal('profile-settings-modal')">✕</button>
+      </div>
+      <form id="profile-settings-form">
+        <!-- Avatar Upload -->
+        <div class="avatar-preview-box">
+          <div class="user-avatar large-avatar" id="settings-avatar-preview">?</div>
+          <div class="avatar-upload-inputs">
+            <label class="form-label">PROFILE PICTURE (PNG, JPG, OR ANIMATED GIF)</label>
+            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+              <button type="button" class="btn-secondary" id="btn-trigger-avatar-file" style="cursor: pointer; padding: 7px 14px; font-size: 13px;">Upload Image / GIF</button>
+              <input type="file" id="settings-avatar-file" accept="image/*" style="position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none;">
+              <button type="button" class="btn-cancel" id="btn-remove-avatar" style="font-size: 12px; padding: 4px 8px; color: var(--status-red); display: none;">Remove</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Banner & Theme -->
+        <div style="margin-top: 14px;">
+          <label class="form-label">PROFILE BANNER & THEME</label>
+          <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+            <button type="button" class="btn-secondary" id="btn-trigger-banner-file" style="cursor: pointer; padding: 7px 14px; font-size: 13px;">Upload Banner / GIF</button>
+            <input type="file" id="settings-banner-file" accept="image/*" style="position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none;">
+            <input type="color" id="settings-banner-color" title="Custom Banner Color" value="#5865F2" style="height: 34px; width: 44px; border: none; border-radius: 4px; cursor: pointer; background: var(--bg-tertiary);">
+            <div id="settings-banner-preview" class="settings-banner-preview-box"></div>
+            <button type="button" class="btn-cancel" id="btn-remove-banner" style="font-size: 12px; padding: 4px 8px; color: var(--status-red); display: none;">Remove</button>
+          </div>
+        </div>
+
+        <label class="form-label" style="margin-top: 14px;">USERNAME</label>
+        <input type="text" id="settings-username" required maxlength="24">
+
+        <label class="form-label">CUSTOM STATUS</label>
+        <input type="text" id="settings-status" placeholder="Playing games, coding..." maxlength="40">
+
+        <label class="form-label">ABOUT ME (BIO)</label>
+        <textarea id="settings-bio" class="settings-bio-textarea" placeholder="Write something about yourself..." maxlength="300"></textarea>
+
+        <!-- Google Account Sync Card -->
+        <div class="settings-google-sync-card">
+          <div class="google-sync-header">
+            <svg viewBox="0 0 24 24" width="20" height="20">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+            </svg>
+            <div id="settings-google-status" style="font-size: 13px; font-weight: 600;">Not Linked to Google</div>
+          </div>
+          <button type="button" class="btn-secondary" id="btn-link-google" style="font-size: 12px; padding: 6px 12px;">Link Google Account</button>
+        </div>
+
+        <div class="modal-actions" style="justify-content: space-between; margin-top: 20px;">
+          <button type="button" class="btn-danger" id="logout-btn">Log Out</button>
+          <div>
+            <button type="button" class="btn-cancel" onclick="closeModal('profile-settings-modal')">Cancel</button>
+            <button type="submit" class="btn-primary">Save Changes</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- User Profile Panel Modal (Rich User View & Management) -->
+  <div id="user-profile-panel-modal" class="modal-overlay" style="display: none;">
+    <div class="user-profile-card">
+      <button type="button" class="profile-card-close" onclick="closeModal('user-profile-panel-modal')">✕</button>
+      <div class="profile-card-banner" id="pcard-banner"></div>
+      <div class="profile-card-header">
+        <div class="profile-card-avatar-wrap">
+          <div class="user-avatar profile-card-avatar" id="pcard-avatar">?</div>
+          <div class="status-dot" id="pcard-status-dot"></div>
+        </div>
+        <div class="profile-card-actions">
+          <button type="button" class="btn-action-pill" id="pcard-btn-edit" style="display: none;" title="Edit Profile & Banner">✏️ Edit Profile</button>
+          <button type="button" class="btn-action-pill" id="pcard-btn-dm" title="Send Direct Message">💬 Message</button>
+          <button type="button" class="btn-action-pill" id="pcard-btn-friend" title="Add / Remove Friend">👥 Add Friend</button>
+          <button type="button" class="btn-action-pill" id="pcard-btn-mute" title="Mute User">🔇 Mute</button>
+          <button type="button" class="btn-action-pill danger" id="pcard-btn-block" title="Block User">🚫 Block</button>
+        </div>
+      </div>
+      <div class="profile-card-body custom-scroll">
+        <div class="profile-card-username-row">
+          <span class="profile-card-name" id="pcard-username">Username</span>
+          <span class="global-badge" id="pcard-badges"></span>
+        </div>
+        <div class="profile-card-custom-status" id="pcard-status">Online</div>
+        <div class="profile-card-divider"></div>
+        
+        <div class="profile-section-title">ABOUT ME</div>
+        <div class="profile-card-bio" id="pcard-bio">No bio provided.</div>
+        
+        <div class="profile-card-divider"></div>
+        <div class="profile-section-title">SERVER ROLES</div>
+        <div class="profile-card-roles-list" id="pcard-roles-list"></div>
+
+        <!-- Moderation Actions -->
+        <div id="pcard-mod-section" style="display: none;">
+          <div class="profile-card-divider"></div>
+          <div class="profile-section-title" style="color: var(--status-red);">MODERATION CONTROLS</div>
+          <div style="display: flex; gap: 8px; margin-top: 8px;">
+            <button type="button" class="btn-danger" id="pcard-btn-kick" style="font-size: 12px; padding: 6px 12px;">👢 Kick Member</button>
+            <button type="button" class="btn-danger" id="pcard-btn-ban" style="font-size: 12px; padding: 6px 12px;">🔨 Ban Member</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- High-Res Image Lightbox Modal -->
+  <div id="image-lightbox-modal" class="modal-overlay" style="display: none;" onclick="closeLightboxModal(event)">
+    <div class="lightbox-wrapper" onclick="event.stopPropagation()">
+      <div class="lightbox-top-bar">
+        <span class="lightbox-filename" id="lightbox-filename">Photo Preview</span>
+        <div style="display: flex; gap: 10px;">
+          <a id="lightbox-download-link" href="#" download class="btn-secondary" style="font-size: 12px; padding: 6px 12px; text-decoration: none;">Download Original</a>
+          <button type="button" class="close-lightbox-btn" onclick="closeModal('image-lightbox-modal')">✕</button>
+        </div>
+      </div>
+      <div class="lightbox-image-container">
+        <img id="lightbox-image" src="" alt="Enlarged photo preview">
+      </div>
+    </div>
+  </div>
+
+  <!-- Discord-Styled Confirmation / Removal Warning Modal -->
+  <div id="confirm-warning-modal" class="modal-overlay" style="display: none;">
+    <div class="confirm-warning-card">
+      <div class="confirm-warning-header">
+        <div class="confirm-warning-icon" id="confirm-modal-icon">⚠️</div>
+        <h3 class="confirm-warning-title" id="confirm-modal-title">Delete Item</h3>
+      </div>
+      <div class="confirm-warning-body">
+        <p class="confirm-warning-desc" id="confirm-modal-desc">Are you sure you want to proceed? This action cannot be undone.</p>
+        <div class="confirm-warning-preview" id="confirm-modal-preview" style="display: none;"></div>
+      </div>
+      <div class="modal-actions confirm-warning-actions">
+        <button type="button" class="btn-cancel" id="confirm-modal-cancel-btn">Cancel</button>
+        <button type="button" class="btn-danger" id="confirm-modal-action-btn">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Discord-Styled Screen Share Setup & Advisory Modal -->
+  <div id="screenshare-modal" class="modal-overlay" style="display: none;">
+    <div class="screenshare-setup-card">
+      <div class="screenshare-header">
+        <div class="screenshare-header-left" style="display: flex; align-items: center; gap: 8px;">
+          <span class="screenshare-live-badge">STREAM</span>
+          <h3 style="margin: 0; font-size: 18px;">Share Your Screen</h3>
+        </div>
+        <button type="button" class="screenshare-close-btn" onclick="closeModal('screenshare-modal')">✕</button>
+      </div>
+
+      <!-- Source Choice Tabs: Entire Screen vs Application / Tab -->
+      <div class="stream-source-selection">
+        <label class="form-label" style="margin-bottom: 8px;">SELECT WHAT TO SHARE</label>
+        
+        <!-- Native Desktop Mode (Tauri) -->
+        <div id="tauri-source-selector" style="display: none;">
+          <div class="tauri-source-tabs">
+            <button type="button" class="tauri-source-tab active" id="tab-tauri-screens">🖥️ Screens (<span id="count-tauri-screens">0</span>)</button>
+            <button type="button" class="tauri-source-tab" id="tab-tauri-apps">🪟 Applications (<span id="count-tauri-apps">0</span>)</button>
+          </div>
+          <div class="tauri-sources-grid" id="tauri-sources-grid">
+            <div style="color: var(--text-muted); font-size: 13px; padding: 12px;">Scanning open windows and screens...</div>
+          </div>
+        </div>
+
+        <div class="stream-source-cards" id="web-source-cards">
+          <div class="stream-source-card active" id="source-opt-monitor" data-surface="monitor">
+            <div class="source-card-icon">🖥️</div>
+            <div class="source-card-info">
+              <strong>Entire Screen</strong>
+              <span>Full desktop, multiple displays, games & apps</span>
+            </div>
+            <div class="source-card-check">✓</div>
+          </div>
+          <div class="stream-source-card" id="source-opt-window" data-surface="window">
+            <div class="source-card-icon">🪟</div>
+            <div class="source-card-info">
+              <strong>Application Window</strong>
+              <span>Specific program, IDE, or game window</span>
+            </div>
+            <div class="source-card-check">✓</div>
+          </div>
+          <div class="stream-source-card" id="source-opt-browser" data-surface="browser">
+            <div class="source-card-icon">🌐</div>
+            <div class="source-card-info">
+              <strong>Browser Tab</strong>
+              <span>Specific website tab with high-def tab audio</span>
+            </div>
+            <div class="source-card-check">✓</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="screenshare-options-grid" style="margin-top: 14px;">
+        <div class="stream-option-group">
+          <label class="form-label">STREAM RESOLUTION</label>
+          <div class="stream-pill-selector" id="stream-res-selector">
+            <button type="button" class="stream-pill" data-res="720">720p HD</button>
+            <button type="button" class="stream-pill active" data-res="1080">1080p FHD</button>
+            <button type="button" class="stream-pill" data-res="1440">Source 2K</button>
+          </div>
+        </div>
+
+        <div class="stream-option-group">
+          <label class="form-label">FRAME RATE</label>
+          <div class="stream-pill-selector" id="stream-fps-selector">
+            <button type="button" class="stream-pill" data-fps="15">15 FPS</button>
+            <button type="button" class="stream-pill active" data-fps="30">30 FPS</button>
+            <button type="button" class="stream-pill" data-fps="60">60 FPS</button>
+          </div>
+        </div>
+      </div>
+
+      <label class="stream-audio-checkbox-row">
+        <input type="checkbox" id="stream-include-audio" checked>
+        <span>Include system / tab audio in stream</span>
+      </label>
+
+      <div class="screenshare-system-hint" style="margin-top: 10px; font-size: 11.5px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.03); padding: 8px 10px; border-radius: 4px; border-left: 3px solid var(--brand-blurple);">
+        <span>ℹ️</span>
+        <span>When clicking <strong>Go Live</strong>, your operating system / browser will ask for final confirmation before starting the stream.</span>
+      </div>
+
+      <div class="modal-actions" style="margin-top: 18px; display: flex; justify-content: space-between; align-items: center;">
+        <button type="button" class="btn-cancel" onclick="closeModal('screenshare-modal')">Cancel</button>
+        <div style="display: flex; gap: 8px;">
+          <button type="button" class="btn-primary" id="btn-start-stream" style="background: var(--brand-blurple); padding: 8px 22px; font-weight: 700; font-size: 13.5px;">
+            Go Live 🚀
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- In-App Notification Toast Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Server Header Dropdown Menu -->
+  <div id="server-dropdown-menu" class="context-menu" style="display: none;">
+    <div class="ctx-item primary-accent" id="menu-invite-people">✉️ Invite People</div>
+    <div class="ctx-divider"></div>
+    <div class="ctx-item" id="menu-server-settings">⚙️ Server Settings & Roles</div>
+    <div class="ctx-item" id="menu-create-category">📁 Create Category</div>
+    <div class="ctx-item" id="menu-create-channel">➕ Create Channel</div>
+    <div class="ctx-item" id="menu-add-join-server">✨ Add or Join Server</div>
+    <div class="ctx-divider" id="menu-verified-divider" style="display: none;"></div>
+    <div class="ctx-item" id="menu-toggle-verified" style="display: none;">🛡️ Toggle Verified Server</div>
+  </div>
+
+  <!-- Mobile Navigation Backdrop -->
+  <div id="mobile-drawer-backdrop" class="mobile-drawer-backdrop"></div>
+
+  <!-- Category Context Menu -->
+  <div id="category-context-menu" class="context-menu" style="display: none;">
+    <div class="ctx-item" id="cat-ctx-rename">✏️ Edit / Rename Category</div>
+    <div class="ctx-item danger" id="cat-ctx-delete">🗑️ Delete Category</div>
+  </div>
+
+  <!-- User Context Menu -->
+  <div id="user-context-menu" class="context-menu" style="display: none;">
+    <div class="ctx-item" id="ctx-send-dm">💬 Send Direct Message</div>
+    <div class="ctx-divider" id="ctx-global-divider" style="display: none;"></div>
+    <div class="ctx-category-label" id="ctx-global-label" style="display: none;">👑 CREATOR CONTROLS</div>
+    <div class="ctx-item" id="ctx-toggle-dev" style="display: none;">⭐ Toggle Global Developer Badge</div>
+    <div class="ctx-divider"></div>
+    <div class="ctx-category-label">SERVER ROLES</div>
+    <div id="ctx-roles-list"></div>
+    <div class="ctx-divider" id="ctx-mod-divider"></div>
+    <div class="ctx-item danger" id="ctx-kick">👢 Kick Member</div>
+    <div class="ctx-item danger" id="ctx-ban">🔨 Ban Member</div>
+  </div>
+
+  <!-- Main App Shell -->
+  <div class="app-container" id="app-container" style="display: none;">
+    <!-- 1. Server Rail -->
+    <nav class="server-rail" id="server-rail">
+      <div class="server-icon" id="nav-dms" title="Direct Messages">
+        <svg viewBox="0 0 24 24" width="26" height="26" fill="white">
+          <path d="M12 2C6.48 2 2 6.48 2 12c0 2.85 1.2 5.42 3.12 7.24l-.86 2.58a1 1 0 0 0 1.26 1.26l2.58-.86C9.92 22.8 10.94 23 12 23c5.52 0 10-4.48 10-10S17.52 2 12 2zm1 14H8v-2h5v2zm3-4H8v-2h8v2zm0-4H8V6h8v2z"/>
+        </svg>
+      </div>
+
+      <div class="rail-divider"></div>
+      <div id="server-rail-list" class="rail-servers-stack"></div>
+
+      <div class="server-icon add-server-btn" id="btn-add-server" title="Add a Server">
+        <span>+</span>
+      </div>
+    </nav>
+
+    <!-- 2. Channels Sidebar -->
+    <aside class="channels-sidebar" id="channels-sidebar">
+      <!-- Animated / Static Server Banner -->
+      <div class="server-banner-container" id="server-banner-container" style="display: none;">
+        <div class="server-banner-img" id="server-banner-img"></div>
+      </div>
+
+      <div class="server-header" id="server-header-btn" title="Server Menu">
+        <div class="server-title-wrap">
+          <span class="server-title" id="sidebar-title">VoxLink Official</span>
+          <span class="server-official-badge" id="server-official-badge" style="display: none;" title="Verified Official Server">
+            <svg viewBox="0 0 16 16" width="16" height="16" fill="none">
+              <path d="M7.4 1.25a.85.85 0 0 1 1.2 0l1.07 1.05c.23.23.56.33.88.27l1.48-.28a.85.85 0 0 1 1 .68l.24 1.49c.05.32.25.6.54.74l1.34.69a.85.85 0 0 1 .44 1.13l-.63 1.38a.85.85 0 0 0 0 .78l.63 1.38a.85.85 0 0 1-.44 1.13l-1.34.69a.85.85 0 0 0-.54.74l-.24 1.49a.85.85 0 0 1-1 .68l-1.48-.28a.85.85 0 0 0-.88.27l-1.07 1.05a.85.85 0 0 1-1.2 0l-1.07-1.05a.85.85 0 0 0-.88-.27l-1.48.28a.85.85 0 0 1-1-.68l-.24-1.49a.85.85 0 0 0-.54-.74l-1.34-.69a.85.85 0 0 1-.44-1.13l.63-1.38a.85.85 0 0 0 0-.78l-.63-1.38a.85.85 0 0 1 .44-1.13l1.34-.69c.29-.15.49-.42.54-.74l.24-1.49a.85.85 0 0 1 1-.68l1.48.28c.32.06.65-.04.88-.27l1.07-1.05Z" fill="#5865F2"/>
+              <path d="M11.3 5.7a.75.75 0 0 1 .05 1.06l-4 4.25a.75.75 0 0 1-1.08.02L4.65 9.4a.75.75 0 1 1 1.05-1.07l1.06 1.04 3.48-3.72a.75.75 0 0 1 1.06.05Z" fill="#fff"/>
+            </svg>
+          </span>
+        </div>
+        <div class="server-header-arrow">▾</div>
+        <button class="mobile-close-btn" id="mobile-sidebar-close">✕</button>
+      </div>
+
+      <!-- Server Channels View -->
+      <div class="channels-list custom-scroll" id="server-channels-view">
+        <div class="server-dms-quick-pill" id="btn-quick-nav-dms" title="Direct Messages & Friends">
+          <div class="server-dms-quick-left">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+              <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+            </svg>
+            <span>Direct Messages & Friends</span>
+          </div>
+          <span id="quick-friends-pending-badge" class="friends-pending-badge" style="display: none;">0</span>
+        </div>
+        <div id="categories-container"></div>
+      </div>
+
+      <!-- Direct Messages List View -->
+      <div class="channels-list custom-scroll" id="dms-view" style="display: none;">
+        <div class="dms-search-wrap">
+          <input type="text" id="find-dm-input" placeholder="Find or start a conversation" class="dms-search-input" autocomplete="off">
+        </div>
+
+        <div style="padding: 0 8px 6px;">
+          <button type="button" id="dm-tab-friends" class="dm-friends-tab-btn active">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+              <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+            </svg>
+            <span>Friends</span>
+            <span id="friends-pending-badge" class="friends-pending-badge" style="display: none;">0</span>
+          </button>
+        </div>
+
+        <div class="dms-section-header">
+          <span class="dms-section-title">DIRECT MESSAGES</span>
+          <button type="button" id="btn-open-create-group" class="dms-create-btn" title="Create DM / Group DM">+</button>
+        </div>
+        <div id="dm-conversations-list" class="dm-conversations-list"></div>
+      </div>
+
+      <!-- Voice Active Bar -->
+      <div class="voice-connection-bar" id="voice-connected-bar" style="display: none;">
+        <div class="voice-conn-info" id="voice-bar-click-expand" title="Open Call Stage">
+          <div class="voice-status-indicator"></div>
+          <div>
+            <div class="voice-status-text">Voice Connected</div>
+            <div class="voice-channel-name" id="current-voice-channel-label">Lounge</div>
+          </div>
+        </div>
+
+        <div class="voice-bar-actions">
+          <button id="toggle-video-btn" class="ctrl-btn-mini" title="Share Camera">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+              <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
+            </svg>
+          </button>
+          <button id="toggle-screen-btn" class="ctrl-btn-mini" title="Share Screen">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+              <path d="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.11-.9-2-2-2H4c-1.11 0-2 .89-2 2v10c0 1.1.89 2 2 2H0v2h24v-2h-4zM4 6h16v10H4V6z"/>
+            </svg>
+          </button>
+          <button id="disconnect-voice-btn" class="ctrl-btn-mini danger" title="Disconnect">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+              <path d="M12 9c-1.6 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08a.996.996 0 0 1 0-1.41C2.5 9.47 5.92 8 9.5 8c3.58 0 7 1.47 9.21 3.67.39.39.39 1.02 0 1.41l-2.48 2.48c-.18.18-.43.29-.71.29-.27 0-.52-.11-.7-.28-.79-.74-1.69-1.36-2.67-1.85-.33-.16-.56-.5-.56-.9v-3.1C15.15 9.25 13.6 9 12 9z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- User Panel (Discord bottom bar) -->
+      <div class="user-panel">
+        <div class="user-profile" id="user-profile-btn" title="User Settings">
+          <div class="avatar-wrap" id="self-avatar-wrap">
+            <div class="user-avatar" id="self-avatar">?</div>
+            <div class="status-dot"></div>
+          </div>
+          <div class="user-name-tag">
+            <div class="username-row">
+              <span class="username" id="self-username">User</span>
+              <span class="global-badge" id="self-global-badge"></span>
+            </div>
+            <span class="user-discriminator" id="self-status-label">Online</span>
+          </div>
+        </div>
+
+        <div class="user-controls">
+          <button id="toggle-mic-btn" class="ctrl-btn" title="Mute Microphone">
+            <svg id="mic-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+              <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+              <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+            </svg>
+            <svg id="mic-muted-icon" style="display:none;" viewBox="0 0 24 24" width="20" height="20" fill="white">
+              <path d="M19 11h-1.7c0 .74-.16 1.43-.43 2.05l1.23 1.23c.56-.98.9-2.09.9-3.28zm-4.02.17c0-.06.02-.11.02-.17V5c0-1.66-1.34-3-3-3S9 3.34 9 5v.18l5.98 5.99zM4.27 3L3 4.27l6.01 6.01V11c0 1.66 1.33 3 2.99 3 .22 0 .44-.03.65-.08l1.66 1.66c-.71.33-1.5.52-2.31.52-2.76 0-5.3-2.24-5.3-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c1.09-.16 2.09-.58 2.98-1.2l3.75 3.75 1.27-1.27L4.27 3z"/>
+            </svg>
+          </button>
+
+          <button id="toggle-deafen-btn" class="ctrl-btn" title="Deafen Audio">
+            <svg id="headphone-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+              <path d="M12 3a9 9 0 0 0-9 9v7c0 1.1.9 2 2 2h4v-8H5v-1a7 7 0 0 1 14 0v1h-4v8h4c1.1 0 2-.9 2-2v-7a9 9 0 0 0-9-9z"/>
+            </svg>
+            <svg id="headphone-deafened-icon" style="display:none;" viewBox="0 0 24 24" width="20" height="20" fill="white">
+              <path d="M12 3a9 9 0 0 0-9 9v7c0 1.1.9 2 2 2h4v-8H5v-1a7 7 0 0 1 14 0v1h-4v8h4c1.1 0 2-.9 2-2v-7a9 9 0 0 0-9-9z"/>
+              <line x1="2" y1="2" x2="22" y2="22" stroke="white" stroke-width="2.5" />
+            </svg>
+          </button>
+
+          <button id="user-settings-gear-btn" class="ctrl-btn" title="User Settings (Edit Profile & Banner)">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+              <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- 3. Full-Screen Voice & Video Call Stage -->
+    <main class="call-stage-screen" id="call-stage-screen" style="display: none;">
+      <div class="call-stage-header">
+        <div class="call-channel-info">
+          <button class="mobile-menu-btn" id="stage-mobile-menu-toggle" style="display: none; margin-right: 8px;">☰</button>
+          <span class="call-voice-icon">🔊</span>
+          <span class="call-channel-title" id="stage-channel-title">Lounge</span>
+          <span class="call-badge-live">LIVE</span>
+        </div>
+        <div class="call-stage-top-actions">
+          <button id="toggle-stage-chat-btn" class="stage-top-btn" title="Toggle Channel Text Chat">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+              <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/>
+            </svg>
+            <span>Show Chat</span>
+          </button>
+          <button id="toggle-fullscreen-btn" class="stage-top-btn" title="Toggle Fullscreen">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+              <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Responsive Dynamic Video Grid -->
+      <div class="call-video-grid-wrapper custom-scroll" id="call-video-grid-wrapper">
+        <div class="call-video-grid" id="call-video-grid"></div>
+      </div>
+
+      <!-- Floating Bottom Call Controls Bar -->
+      <div class="call-floating-controls">
+        <button id="stage-toggle-mic-btn" class="call-ctrl-btn" title="Toggle Microphone">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
+        </button>
+        <button id="stage-toggle-video-btn" class="call-ctrl-btn" title="Toggle Camera">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
+        </button>
+        <button id="stage-toggle-screen-btn" class="call-ctrl-btn" title="Share Screen">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.11-.9-2-2-2H4c-1.11 0-2 .89-2 2v10c0 1.1.89 2 2 2H0v2h24v-2h-4zM4 6h16v10H4V6z"/></svg>
+        </button>
+        <button id="stage-disconnect-btn" class="call-ctrl-btn end-call" title="Disconnect">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 9c-1.6 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08a.996.996 0 0 1 0-1.41C2.5 9.47 5.92 8 9.5 8c3.58 0 7 1.47 9.21 3.67.39.39.39 1.02 0 1.41l-2.48 2.48c-.18.18-.43.29-.71.29-.27 0-.52-.11-.7-.28-.79-.74-1.69-1.36-2.67-1.85-.33-.16-.56-.5-.56-.9v-3.1C15.15 9.25 13.6 9 12 9z"/></svg>
+        </button>
+      </div>
+    </main>
+
+    <!-- 4. Chat Main Area -->
+    <main class="chat-area" id="chat-area">
+      <!-- Dedicated Discord-Style Friends Stage -->
+      <section class="friends-main-stage" id="friends-main-stage" style="display: none;">
+        <div class="friends-top-navbar" id="friends-top-navbar">
+          <button class="mobile-menu-btn" id="friends-mobile-menu-toggle" style="display: none; margin-right: 8px;">☰</button>
+          <div class="friends-nav-heading">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+              <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+            </svg>
+            <span>Friends</span>
+          </div>
+          <div class="friends-nav-divider"></div>
+          <div class="friends-nav-tabs">
+            <button type="button" class="friends-tab-pill active" data-tab="online">Online <span id="friends-count-online" class="friends-count-pill">0</span></button>
+            <button type="button" class="friends-tab-pill" data-tab="all">All <span id="friends-count-all" class="friends-count-pill">0</span></button>
+            <button type="button" class="friends-tab-pill" data-tab="pending">Pending <span id="friends-count-pending" class="friends-count-pill alert" style="display: none;">0</span></button>
+            <button type="button" class="friends-tab-pill" data-tab="blocked">Blocked</button>
+            <button type="button" class="friends-tab-pill add-friend-pill" data-tab="add">Add Friend</button>
+            <button type="button" class="friends-tab-pill add-server-nav-pill" id="btn-top-add-server" style="background: rgba(88, 101, 242, 0.15); color: #5865F2; border: 1px solid rgba(88, 101, 242, 0.35); font-weight: 600; margin-left: 8px;">➕ Join / Add Server</button>
+          </div>
+        </div>
+
+        <div class="friends-stage-body custom-scroll" id="friends-stage-body">
+          <!-- Dynamically populated with Discord Friends content -->
+        </div>
+      </section>
+
+      <header class="chat-header" id="chat-header">
+        <button class="mobile-menu-btn" id="mobile-menu-toggle">☰</button>
+        <div class="chat-channel-title">
+          <span class="hash-tag" id="active-header-icon">#</span>
+          <span id="active-channel-name">general</span>
+        </div>
+        <div class="header-divider"></div>
+        <div class="chat-topic" id="active-channel-topic">General discussion and hangouts</div>
+        <div class="channel-slowmode-indicator" id="channel-slowmode-indicator" style="display: none;" title="Slowmode is active">
+          <span class="slowmode-icon">⏱️</span>
+          <span id="channel-slowmode-val">5s</span>
+        </div>
+        <div class="chat-header-actions">
+          <button type="button" class="header-action-btn" id="dm-start-voice-btn" style="display: none;" title="Start Voice Call">
+            <span class="header-action-icon">📞</span>
+          </button>
+          <button type="button" class="header-action-btn" id="dm-start-video-btn" style="display: none;" title="Start Video Call">
+            <span class="header-action-icon">📹</span>
+          </button>
+          <button type="button" class="header-action-btn" id="dm-start-screen-btn" style="display: none;" title="Share Screen">
+            <span class="header-action-icon">🖥️</span>
+          </button>
+          <button type="button" class="header-action-btn" id="dm-add-friends-btn" style="display: none;" title="Add Friends to DM">
+            <span class="header-action-icon" style="font-size: 15px; font-weight: bold;">👤+</span>
+          </button>
+          <button type="button" class="header-action-btn" id="dm-group-settings-btn" style="display: none;" title="Group Settings">
+            <span class="header-action-icon">⚙️</span>
+          </button>
+          <button type="button" class="header-action-btn" id="dm-clear-chat-btn" style="display: none;" title="Delete Conversation">
+            <span class="header-action-icon">🗑️</span>
+          </button>
+          <button type="button" class="header-action-btn" id="toggle-threads-btn" title="Channel Threads">
+            <span class="header-action-icon">🧵</span>
+          </button>
+          <button type="button" class="header-action-btn" id="toggle-pins-btn" title="Pinned Messages">
+            <span class="header-action-icon">📌</span>
+            <span class="pins-count-badge" id="pins-count-badge" style="display: none;">0</span>
+          </button>
+          <button type="button" class="header-action-btn" id="toggle-members-btn" title="Toggle Member List">
+            <span class="header-action-icon">👥</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Messages Stream -->
+      <div class="messages-container custom-scroll" id="messages-container">
+        <div class="messages-welcome" id="messages-welcome-box">
+          <div class="welcome-icon" id="welcome-icon">#</div>
+          <h2 id="welcome-title">Welcome to #general!</h2>
+          <p id="welcome-desc">This is the start of the channel. Send a message to get things rolling.</p>
+        </div>
+        <div id="messages-list"></div>
+      </div>
+
+      <!-- Drag & Drop File Upload Overlay -->
+      <div class="chat-dropzone-overlay" id="chat-dropzone-overlay" style="display: none;">
+        <div class="dropzone-box">
+          <div class="dropzone-icon">📁</div>
+          <div class="dropzone-title">Upload to Channel</div>
+          <div class="dropzone-sub">Drop files here to preview and upload</div>
+        </div>
+      </div>
+
+      <!-- Rich Attachment Preview Drawer -->
+      <div class="attachment-preview-bar" id="attachment-preview-bar" style="display: none;">
+        <div class="preview-rich-card" id="preview-rich-card">
+          <!-- Image preview thumbnail -->
+          <img id="attachment-preview-img" class="preview-thumbnail" style="display: none;" alt="Preview">
+          
+          <!-- Code / Text Snippet peek box -->
+          <div id="attachment-preview-code-box" class="preview-code-peek" style="display: none;">
+            <div class="preview-code-header">
+              <span id="preview-code-badge" class="preview-badge">CODE</span>
+              <span class="preview-code-hint">Snippet Preview</span>
+            </div>
+            <pre id="attachment-preview-code-text" class="preview-code-snippet"><code></code></pre>
+          </div>
+
+          <!-- Generic file badge for non-code/non-image -->
+          <div id="attachment-preview-file-icon" class="preview-generic-icon">📄</div>
+
+          <div class="preview-meta-info">
+            <span id="preview-filename" class="preview-filename-text">image.png</span>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span id="preview-filesize" class="preview-filesize-text">0 KB</span>
+              <span id="preview-p2p-pill" class="preview-p2p-pill" style="display: none;">⚡ P2P Direct Link</span>
+            </div>
+          </div>
+
+          <button type="button" class="remove-preview-btn" id="remove-attachment-btn" title="Remove attachment">✕</button>
+        </div>
+      </div>
+
+      <!-- Voice Note Recording Banner -->
+      <div class="voice-recording-banner" id="voice-recording-banner" style="display: none;">
+        <div class="recording-pulse"></div>
+        <span class="rec-time" id="recording-timer">00:00</span>
+        <span class="rec-label">Recording Voice Message...</span>
+        <button type="button" class="rec-cancel-btn" id="cancel-voice-btn">Cancel</button>
+        <button type="button" class="rec-send-btn" id="stop-voice-btn">Stop & Review</button>
+      </div>
+
+      <!-- Voice Note Audition / Preview Banner -->
+      <div class="voice-preview-banner" id="voice-preview-banner" style="display: none;">
+        <button type="button" class="voice-preview-play-btn" id="preview-voice-play-btn" title="Play/Pause">▶</button>
+        <div class="voice-preview-track-info">
+          <span class="preview-voice-label">Recorded Voice Note</span>
+          <span class="preview-voice-time" id="preview-voice-time">00:00</span>
+        </div>
+        <audio id="preview-voice-audio"></audio>
+        <button type="button" class="btn-cancel" id="discard-voice-btn" style="padding: 6px 12px; font-size: 13px;">🗑️ Discard</button>
+        <button type="button" class="rec-send-btn" id="confirm-send-voice-btn">Send Voice Note</button>
+      </div>
+
+      <!-- Reply Draft Banner (Discord Style) -->
+      <div class="reply-preview-bar" id="reply-preview-bar" style="display: none;">
+        <div class="reply-preview-left">
+          <span class="reply-preview-icon">↩️</span>
+          <span>Replying to <strong id="reply-preview-author">@User</strong></span>
+          <span class="reply-preview-snippet" id="reply-preview-text">Snippet</span>
+        </div>
+        <button type="button" class="reply-preview-cancel" id="cancel-reply-btn" title="Cancel Reply">✕</button>
+      </div>
+
+      <!-- Thread Draft Mode Banner -->
+      <div class="thread-draft-banner" id="thread-draft-banner" style="display: none;">
+        <div class="thread-draft-left">
+          <span class="thread-draft-icon">🧵</span>
+          <span class="thread-draft-label">Creating Thread:</span>
+          <input type="text" id="thread-draft-name-input" class="thread-draft-name-field" placeholder="Thread Title (Optional)" maxlength="50">
+        </div>
+        <button type="button" class="thread-draft-cancel" id="cancel-thread-draft-btn" title="Cancel Thread Mode">✕</button>
+      </div>
+
+      <!-- Slowmode Cooldown Bar -->
+      <div class="slowmode-cooldown-bar" id="slowmode-cooldown-bar" style="display: none;">
+        <span class="slowmode-cooldown-icon">⏱️</span>
+        <span class="slowmode-cooldown-text">Slowmode is enabled — cooldown: <strong id="slowmode-countdown-timer">5s</strong></span>
+      </div>
+
+      <!-- Emoji Picker Popover -->
+      <div class="emoji-picker-popover" id="emoji-picker-popover" style="display: none;">
+        <div class="emoji-picker-header">
+          <span>EMOJIS & REACTIONS</span>
+          <button type="button" class="close-picker-btn" id="close-emoji-picker">✕</button>
+        </div>
+        <div class="emoji-grid-list custom-scroll" id="emoji-grid-list"></div>
+      </div>
+
+      <!-- Discord-Style GIF Browser / Picker Popover -->
+      <div class="gif-picker-popover" id="gif-picker-popover" style="display: none;">
+        <div class="gif-picker-header">
+          <div class="gif-picker-title">
+            <span>SELECT A GIF</span>
+          </div>
+          <button type="button" class="close-picker-btn" id="close-gif-picker">✕</button>
+        </div>
+        <div class="gif-search-bar-wrap">
+          <input type="text" id="gif-search-input" placeholder="Search Tenor / GIFs..." autocomplete="off">
+        </div>
+        <!-- Quick category pills -->
+        <div class="gif-category-tags custom-scroll" id="gif-category-tags">
+          <button type="button" class="gif-tag-pill active" data-tag="trending">🔥 Trending</button>
+          <button type="button" class="gif-tag-pill" data-tag="laugh">😂 Laugh</button>
+          <button type="button" class="gif-tag-pill" data-tag="dance">💃 Dance</button>
+          <button type="button" class="gif-tag-pill" data-tag="applause">👏 Applause</button>
+          <button type="button" class="gif-tag-pill" data-tag="anime">✨ Anime</button>
+          <button type="button" class="gif-tag-pill" data-tag="cat">🐱 Cat</button>
+          <button type="button" class="gif-tag-pill" data-tag="shock">🤯 Shock</button>
+          <button type="button" class="gif-tag-pill" data-tag="party">🎉 Party</button>
+          <button type="button" class="gif-tag-pill" data-tag="gaming">🎮 Gaming</button>
+          <button type="button" class="gif-tag-pill" data-tag="sad">😭 Sad</button>
+        </div>
+        <!-- Scrollable GIF grid -->
+        <div class="gif-grid-container custom-scroll" id="gif-grid-container">
+          <div class="gif-loading-state" id="gif-loading-state">Loading GIFs...</div>
+        </div>
+      </div>
+
+      <!-- Pinned Messages Popover (Discord Style) -->
+      <div class="pinned-messages-popover" id="pinned-messages-popover" style="display: none;">
+        <div class="popover-header">
+          <div class="popover-title">
+            <span>📌 PINNED MESSAGES</span>
+          </div>
+          <button type="button" class="close-picker-btn" id="close-pins-btn">✕</button>
+        </div>
+        <div class="pinned-messages-list custom-scroll" id="pinned-messages-list">
+          <div class="popover-empty-state">No pinned messages in this channel yet.</div>
+        </div>
+      </div>
+
+      <!-- Threads List Popover -->
+      <div class="threads-list-popover" id="threads-list-popover" style="display: none;">
+        <div class="popover-header">
+          <div class="popover-title">
+            <span>🧵 CHANNEL THREADS</span>
+          </div>
+          <button type="button" class="close-picker-btn" id="close-threads-list-btn">✕</button>
+        </div>
+        <div class="channel-threads-list custom-scroll" id="channel-threads-list">
+          <div class="popover-empty-state">No active threads in this channel.</div>
+        </div>
+      </div>
+
+      <!-- Floating Message Hover Reaction Popover -->
+      <div class="msg-reaction-popover" id="msg-reaction-popover" style="display: none;">
+        <div class="reaction-emoji-btn" data-emoji="👍">👍</div>
+        <div class="reaction-emoji-btn" data-emoji="❤️">❤️</div>
+        <div class="reaction-emoji-btn" data-emoji="🔥">🔥</div>
+        <div class="reaction-emoji-btn" data-emoji="😂">😂</div>
+        <div class="reaction-emoji-btn" data-emoji="🎉">🎉</div>
+        <div class="reaction-emoji-btn" data-emoji="🚀">🚀</div>
+        <div class="reaction-emoji-btn" data-emoji="👀">👀</div>
+        <div class="reaction-emoji-btn" data-emoji="💯">💯</div>
+      </div>
+
+      <!-- Chat Input Area -->
+      <div class="chat-input-wrapper">
+        <form id="chat-form" class="chat-input-box">
+          <label class="input-action-btn" title="Send a file, image or code">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+              <path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5a2.5 2.5 0 0 1 5 0v10.5c0 .83-.67 1.5-1.5 1.5s-1.5-.67-1.5-1.5V6H9v9.5a3.5 3.5 0 0 0 7 0V5c0-2.21-1.79-4-4-4S5 2.79 5 5v12.5c0 3.31 2.69 6 6 6s6-2.69 6-6V6h-2.5z"/>
+            </svg>
+            <input type="file" id="file-input" style="display: none;">
+          </label>
+
+          <input type="text" id="chat-input" placeholder="Message #general (use /code for code, /thread for threads)" autocomplete="off" maxlength="3000">
+
+          <button type="button" class="input-action-btn" id="toggle-thread-draft-btn" title="Toggle Thread Mode (Start a thread with your message)">
+            <span class="chat-thread-btn-badge">🧵</span>
+          </button>
+
+          <button type="button" class="input-action-btn" id="toggle-gif-btn" title="Open GIF Browser">
+            <span class="chat-gif-btn-badge">GIF</span>
+          </button>
+
+          <button type="button" class="input-action-btn" id="toggle-emoji-btn" title="Insert Emoji">
+            <svg viewBox="0 0 24 24" width="21" height="21" fill="currentColor">
+              <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"/>
+            </svg>
+          </button>
+
+          <button type="button" class="input-action-btn" id="record-voice-btn" title="Record Voice Message">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+              <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+              <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+            </svg>
+          </button>
+
+          <button type="submit" class="send-message-btn" title="Send">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+              <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+            </svg>
+          </button>
+        </form>
+      </div>
+    </main>
+
+    <!-- 4.5. Thread Sidebar Panel (Discord Style) -->
+    <aside class="thread-sidebar-panel" id="thread-sidebar-panel" style="display: none;">
+      <header class="thread-panel-header">
+        <div class="thread-panel-title-wrap">
+          <span class="thread-panel-icon">🧵</span>
+          <div class="thread-panel-heading">
+            <span class="thread-panel-name" id="thread-panel-name">Thread</span>
+            <span class="thread-panel-sub" id="thread-panel-sub">Started by @User</span>
+          </div>
+        </div>
+        <div class="thread-panel-actions">
+          <button type="button" class="thread-panel-action-btn" id="toggle-thread-view-mode-btn" title="Toggle Fullscreen / Side-by-side View">⛶</button>
+          <button type="button" class="thread-panel-action-btn danger" id="delete-thread-btn" title="Delete Thread">🗑️</button>
+          <button type="button" class="close-modal-btn" id="close-thread-panel-btn" title="Close Thread">✕</button>
+        </div>
+      </header>
+
+      <div class="thread-messages-scroll-area custom-scroll" id="thread-messages-scroll-area">
+        <!-- Pinned Root Message Card -->
+        <div class="thread-pinned-starter-card" id="thread-pinned-starter-card">
+          <div class="thread-starter-pinned-badge">📌 PINNED THREAD STARTER</div>
+          <div class="thread-starter-body" id="thread-starter-body"></div>
+        </div>
+
+        <div class="thread-divider-line">
+          <span>RESPONSES</span>
+        </div>
+
+        <!-- Thread replies list -->
+        <div class="thread-messages-list" id="thread-messages-list"></div>
+      </div>
+
+      <!-- Thread Input Form -->
+      <div class="thread-input-wrapper">
+        <form id="thread-chat-form" class="chat-input-box">
+          <input type="text" id="thread-chat-input" placeholder="Send a message in thread..." autocomplete="off" maxlength="3000">
+          <button type="submit" class="send-message-btn" title="Send Reply">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+              <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+            </svg>
+          </button>
+        </form>
+      </div>
+    </aside>
+
+    <!-- 5. Member List -->
+    <aside class="members-sidebar" id="members-sidebar">
+      <div class="members-sidebar-header" id="members-sidebar-header">
+        <div class="members-sidebar-header-left">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+            <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+          </svg>
+          <span class="members-sidebar-title">Server Members</span>
+        </div>
+        <button type="button" class="members-sidebar-close-btn" id="close-members-sidebar-btn" title="Close Members List" aria-label="Close Members List">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+          </svg>
+        </button>
+      </div>
+      <div class="members-list custom-scroll" id="members-list"></div>
+    </aside>
+  </div>
+
+  <!-- Mobile Members Backdrop -->
+  <div id="members-backdrop" class="members-backdrop" style="display: none;"></div>
+
+  <div id="remote-audio-container" style="display: none;"></div>
+
+  <script src="socket.io.min.js"></script>
+  <script>if (typeof io === 'undefined') { document.write('<script src="/socket.io/socket.io.js"><\/script>'); }</script>
+  <script src="app.js?v=3.7"></script>
+</body>
+</html>

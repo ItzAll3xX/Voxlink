@@ -1,0 +1,178 @@
+{
+  "trending": [
+    {
+      "title": "Excited Party",
+      "url": "https://media.giphy.com/media/artj92V8o75VPL7AeQ/giphy.gif"
+    },
+    {
+      "title": "Cat Dance Vibe",
+      "url": "https://media.giphy.com/media/Nm8ZPAGOwZUQM/giphy.gif"
+    },
+    {
+      "title": "Snoop Dogg Dance",
+      "url": "https://media.giphy.com/media/wAxlCmeX1ri1y/giphy.gif"
+    },
+    {
+      "title": "Mind Blown",
+      "url": "https://media.giphy.com/media/26ufdipQqU2lhNA4g/giphy.gif"
+    },
+    {
+      "title": "Shaq Shimmy",
+      "url": "https://media.giphy.com/media/UO5elnTqo4vSg/giphy.gif"
+    },
+    {
+      "title": "This Is Fine",
+      "url": "https://media.giphy.com/media/9M5jK4GXmD5o1irGrF/giphy.gif"
+    }
+  ],
+  "laugh": [
+    {
+      "title": "Laughing Dog",
+      "url": "https://media.giphy.com/media/29HRejgahYenVsohB5/giphy.gif"
+    },
+    {
+      "title": "Ryan Reynolds Laugh",
+      "url": "https://media.giphy.com/media/10JhviFuU2gWD6/giphy.gif"
+    },
+    {
+      "title": "Crying Laughing",
+      "url": "https://media.giphy.com/media/GpyS1lJXJYupG/giphy.gif"
+    },
+    {
+      "title": "Kermit Laugh",
+      "url": "https://media.giphy.com/media/9MFsKQ8A6HCN2/giphy.gif"
+    },
+    {
+      "title": "Baby Laugh",
+      "url": "https://media.giphy.com/media/13AXYJh2jDt2IE/giphy.gif"
+    }
+  ],
+  "dance": [
+    {
+      "title": "Cat Dance Vibe",
+      "url": "https://media.giphy.com/media/Nm8ZPAGOwZUQM/giphy.gif"
+    },
+    {
+      "title": "Carlton Dance",
+      "url": "https://media.giphy.com/media/pa37AAGzKXoek/giphy.gif"
+    },
+    {
+      "title": "Dancing Kermit",
+      "url": "https://media.giphy.com/media/blSTtZehjAZ8I/giphy.gif"
+    },
+    {
+      "title": "Happy Dance Dog",
+      "url": "https://media.giphy.com/media/3o7qDSOvfaCO9b3MlO/giphy.gif"
+    },
+    {
+      "title": "Club Dance Moves",
+      "url": "https://media.giphy.com/media/l3V0lsGtTMSB5YNgc/giphy.gif"
+    }
+  ],
+  "applause": [
+    {
+      "title": "Clapping Citizen Kane",
+      "url": "https://media.giphy.com/media/g9582DNuQppxC/giphy.gif"
+    },
+    {
+      "title": "Standing Ovation",
+      "url": "https://media.giphy.com/media/nbvFVPiEiJH6JOGIok/giphy.gif"
+    },
+    {
+      "title": "Leonardo Slow Clap",
+      "url": "https://media.giphy.com/media/7rj2ZgttvgomY/giphy.gif"
+    },
+    {
+      "title": "Friends Clapping",
+      "url": "https://media.giphy.com/media/artj92V8o75VPL7AeQ/giphy.gif"
+    }
+  ],
+  "anime": [
+    {
+      "title": "Anime Dance Sparkle",
+      "url": "https://media.giphy.com/media/13HgwGsXF0aiGY/giphy.gif"
+    },
+    {
+      "title": "Anime Cat Smile",
+      "url": "https://media.giphy.com/media/10t57cXgo7x5kI/giphy.gif"
+    },
+    {
+      "title": "Anime Wow Face",
+      "url": "https://media.giphy.com/media/slVWEctHZKvWU/giphy.gif"
+    }
+  ],
+  "cat": [
+    {
+      "title": "Bongo Cat",
+      "url": "https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif"
+    },
+    {
+      "title": "Cat Vibing Jam",
+      "url": "https://media.giphy.com/media/Nm8ZPAGOwZUQM/giphy.gif"
+    },
+    {
+      "title": "Surprised Cat",
+      "url": "https://media.giphy.com/media/MDJ9IbxxvDUQM/giphy.gif"
+    },
+    {
+      "title": "Cat Hug",
+      "url": "https://media.giphy.com/media/mlvseq9yvZhba/giphy.gif"
+    }
+  ],
+  "shock": [
+    {
+      "title": "Surprised Pikachu",
+      "url": "https://media.giphy.com/media/6nWhy3ulBL7GSCvKw6/giphy.gif"
+    },
+    {
+      "title": "Mind Blown Space",
+      "url": "https://media.giphy.com/media/26ufdipQqU2lhNA4g/giphy.gif"
+    }
+  ],
+  "party": [
+    {
+      "title": "Confetti Party",
+      "url": "https://media.giphy.com/media/artj92V8o75VPL7AeQ/giphy.gif"
+    },
+    {
+      "title": "Kermit Celebration",
+      "url": "https://media.giphy.com/media/blSTtZehjAZ8I/giphy.gif"
+    },
+    {
+      "title": "Disco Party",
+      "url": "https://media.giphy.com/media/pa37AAGzKXoek/giphy.gif"
+    }
+  ],
+  "gaming": [
+    {
+      "title": "Gamer Rage",
+      "url": "https://media.giphy.com/media/11tTNkNy1SdXGg/giphy.gif"
+    },
+    {
+      "title": "Victory Royale",
+      "url": "https://media.giphy.com/media/3o7qDEq2bMbcbPRQ2c/giphy.gif"
+    },
+    {
+      "title": "Pro Gamer Move",
+      "url": "https://media.giphy.com/media/d3mlE7uhX8KFgEmY/giphy.gif"
+    },
+    {
+      "title": "GG Well Played",
+      "url": "https://media.giphy.com/media/L3ERvA6jWCd0qO4NdX/giphy.gif"
+    }
+  ],
+  "sad": [
+    {
+      "title": "Crying Rain Dog",
+      "url": "https://media.giphy.com/media/OPU6wzx8JrHna/giphy.gif"
+    },
+    {
+      "title": "Cat Crying Tears",
+      "url": "https://media.giphy.com/media/ISOckXUybVfQ4/giphy.gif"
+    },
+    {
+      "title": "Sad Kermit",
+      "url": "https://media.giphy.com/media/9Y5BbDSkSTiY8/giphy.gif"
+    }
+  ]
+}

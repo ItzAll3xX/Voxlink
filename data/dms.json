@@ -1,0 +1,90 @@
+{
+  "usr_1791462637071_2trjp::usr_1791562718965_uid05": [
+    {
+      "id": "dm_1792363365058_otpu8",
+      "senderId": "usr_1791462637071_2trjp",
+      "targetId": "usr_1791562718965_uid05",
+      "username": "ItzAll3xX",
+      "color": "#F47B67",
+      "avatarUrl": "/uploads/avatar_usr_1791462637071_2trjp.gif",
+      "globalBadges": [
+        "PROJECT_OWNER",
+        "DEVELOPER"
+      ],
+      "text": "hmm",
+      "attachment": null,
+      "voiceNote": null,
+      "p2pFile": null,
+      "replyTo": null,
+      "reactions": {},
+      "isEdited": false,
+      "timestamp": "2026-10-18T22:42:45.058Z"
+    },
+    {
+      "id": "dm_1792363586399_w5hep",
+      "senderId": "usr_1791562718965_uid05",
+      "targetId": "usr_1791462637071_2trjp",
+      "username": "test",
+      "color": "#EB459E",
+      "avatarUrl": null,
+      "globalBadges": [],
+      "text": "Hi",
+      "attachment": null,
+      "voiceNote": null,
+      "p2pFile": null,
+      "replyTo": null,
+      "reactions": {},
+      "isEdited": false,
+      "timestamp": "2026-10-18T22:46:26.399Z"
+    },
+    {
+      "id": "dm_1792363646436_y573o",
+      "senderId": "usr_1791462637071_2trjp",
+      "targetId": "usr_1791562718965_uid05",
+      "username": "ItzAll3xX",
+      "color": "#F47B67",
+      "avatarUrl": "/uploads/avatar_usr_1791462637071_2trjp.gif",
+      "globalBadges": [
+        "PROJECT_OWNER",
+        "DEVELOPER"
+      ],
+      "text": "",
+      "attachment": {
+        "name": "Snoop_Dogg_Dance.gif",
+        "type": "image/gif",
+        "dataUrl": "https://media.giphy.com/media/wAxlCmeX1ri1y/giphy.gif"
+      },
+      "voiceNote": null,
+      "p2pFile": null,
+      "replyTo": null,
+      "reactions": {},
+      "isEdited": false,
+      "timestamp": "2026-10-18T22:47:26.436Z"
+    }
+  ],
+  "usr_1791462637071_2trjp::usr_1792159778522_fpfup": [],
+  "group_grp_1792534460917_o2ak8": [
+    {
+      "id": "dm_1792618278935_37ksr",
+      "senderId": "usr_1791462637071_2trjp",
+      "targetId": "grp_1792534460917_o2ak8",
+      "groupId": "grp_1792534460917_o2ak8",
+      "isGroup": true,
+      "username": "ItzAll3xX",
+      "color": "#F47B67",
+      "avatarUrl": "/uploads/avatar_usr_1791462637071_2trjp.gif",
+      "globalBadges": [
+        "PROJECT_OWNER",
+        "DEVELOPER"
+      ],
+      "text": "https://open.spotify.com/playlist/0VlnINr5zjWZKubD4ePmD9?si=uBDzyPycT-CFVHDrKvcxrA",
+      "attachment": null,
+      "voiceNote": null,
+      "p2pFile": null,
+      "replyTo": null,
+      "reactions": {},
+      "isEdited": false,
+      "timestamp": "2026-10-21T21:31:18.935Z"
+    }
+  ]
+}

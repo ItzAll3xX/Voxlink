@@ -1,0 +1,42 @@
+{
+  "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+  "productName": "VoxLink",
+  "version": "1.0.0",
+  "identifier": "com.voxlink.desktop",
+  "build": {
+    "frontendDist": "../public",
+    "devUrl": "http://localhost:3000"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [
+      {
+        "label": "main",
+        "title": "VoxLink",
+        "width": 1280,
+        "height": 820,
+        "minWidth": 850,
+        "minHeight": 600,
+        "resizable": true,
+        "fullscreen": false,
+        "center": true,
+        "useHttpsScheme": true,
+        "additionalBrowserArgs": "--enable-features=MediaFoundationD3D11VideoCapture,HardwareMediaKeyHandling --ignore-gpu-blocklist --enable-gpu-rasterization --enable-zero-copy"
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis"],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ]
+  }
+}

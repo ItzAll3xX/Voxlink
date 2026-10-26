@@ -1,0 +1,9 @@
+{
+  "appId": "com.voxlink.app",
+  "appName": "VoxLink",
+  "webDir": "public",
+  "server": {
+    "androidScheme": "http",
+    "cleartext": true
+  }
+}

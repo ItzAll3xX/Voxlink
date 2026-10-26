@@ -1,0 +1,65 @@
+{
+  "usr_1791462637071_2trjp": {
+    "id": "usr_1791462637071_2trjp",
+    "username": "ItzAll3xX",
+    "salt": "e154992c3e9d60da9ad1108ffc12c429",
+    "hash": "3d6ea6160831120be304ff55826a5f9a331bed040fc284782ac4984ba005d024d0435cec7fe5b72f97ac1bc411d1560aa0360dd4d0c5db78d6d59b3a095e580d",
+    "color": "#F47B67",
+    "avatarUrl": "/uploads/avatar_usr_1791462637071_2trjp.gif",
+    "customStatus": "chilling",
+    "globalBadges": [
+      "PROJECT_OWNER",
+      "DEVELOPER"
+    ],
+    "createdAt": "2026-10-08T12:30:37.071Z",
+    "googleEmail": "itzall3xx@gmail.com",
+    "bannerUrl": "/uploads/banner_usr_1791462637071_2trjp.gif",
+    "bannerColor": "#5865F2",
+    "bio": "voxlinx da best"
+  },
+  "usr_1791542860571_z19tx": {
+    "id": "usr_1791542860571_z19tx",
+    "username": "gamer_vnq1",
+    "salt": "936e7c93112d693a21e178ee02447040",
+    "hash": "39d63695c91183a20635cc4082244771a2db0c29c272f51ade75381428304f3c085b82d6c19f74be2b83dc016e9ca3cf4f3eb34691029e9fb81bc2c2edce16ad",
+    "color": "#ED4245",
+    "avatarUrl": null,
+    "customStatus": "Online",
+    "globalBadges": [],
+    "createdAt": "2026-10-09T10:47:40.571Z"
+  },
+  "usr_1791542860718_oe6zq": {
+    "id": "usr_1791542860718_oe6zq",
+    "username": "gamer_owh8",
+    "salt": "94dde739add26f995d07fa1cd47ad3e3",
+    "hash": "45c4d12c73d194e22ea074328fde259584006a4ffb94a764793d160a37a551fe9f09aa4932ba13818e528a98df0070b91552b904e9443154963d585f1dc785f2",
+    "color": "#FAA61A",
+    "avatarUrl": null,
+    "customStatus": "Online",
+    "globalBadges": [],
+    "createdAt": "2026-10-09T10:47:40.718Z"
+  },
+  "usr_1791562718965_uid05": {
+    "id": "usr_1791562718965_uid05",
+    "username": "test",
+    "salt": "6c05387dc8c81bfd6bcc4898adc5654e",
+    "hash": "5f39d5cd003d0a160781f3a960d5b506094a020ad1567a6cba25d46440d05487e3297229de0e344a287faabd1e9b184842aadd85013c0cbebfd7293bf89a1ba4",
+    "color": "#EB459E",
+    "avatarUrl": null,
+    "customStatus": "Idk",
+    "globalBadges": [],
+    "createdAt": "2026-10-09T16:18:38.965Z"
+  },
+  "usr_1792159778522_fpfup": {
+    "id": "usr_1792159778522_fpfup",
+    "email": "alex.developer@gmail.com",
+    "username": "AlexDev",
+    "salt": "877bdace64231b9b821636ab30d62a41",
+    "hash": "b60da17d1c8de4c49e3e7322d22a6d4473438688b6dbecfa1787f9891a21d7a28f164d057db8a42c28336b916f00ddce9540225f9d1244999d4c8db40899505a",
+    "color": "#FEE75C",
+    "avatarUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&auto=format&fit=crop",
+    "customStatus": "Connected with Google",
+    "globalBadges": [],
+    "createdAt": "2026-10-16T14:09:38.567Z"
+  }
+}
